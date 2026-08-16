@@ -20,3 +20,7 @@ that there are some bugs. Additionally: my ambition isn't to be 100% compatible
 with Tailwind. That being said, current implementation can be already quite
 useful, so I encourage you to try and if you have some time, report bugs or
 inconsistencies. Merge requests are always welcome!
+
+## Examples
+
+I've placed them [here](https://github.com/thinkofher/upupidae-examples).
