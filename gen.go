@@ -5837,7 +5837,7 @@ func (g *gen) utilityTransitionTimingFunction(
 func (g *gen) utilityAnimate(
 	ctx context.Context, parts []*parser.NamePart, mod *parser.SlashValue,
 ) (*utilityGenerated, error) {
-	if mod != nil || len(parts) != 1 {
+	if mod != nil {
 		return nil, errUtilityUnknown
 	}
 
@@ -5849,7 +5849,7 @@ func (g *gen) utilityAnimate(
 	case p.Ident != "":
 		return newUtilityGeneratedKV(
 			"animation",
-			g.cssVar(ctx, fmt.Sprintf("--animate-%s", p.String())),
+			g.cssVar(ctx, fmt.Sprintf("--animate-%s", partsJoin(parts))),
 		), nil
 	case p.Custom != "":
 		_, v := p.CustomParts()

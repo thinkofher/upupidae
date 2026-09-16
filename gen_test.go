@@ -3855,6 +3855,7 @@ func TestGen(t *testing.T) {
 			},
 		}))
 
+		t.Run(scenario("animate-pulse-ring", newUtilityGeneratedKV("animation", "var(--animate-pulse-ring)")))
 		t.Run(scenario("animate-spin", newUtilityGeneratedKV("animation", "var(--animate-spin)")))
 		t.Run(scenario("animate-none", newUtilityGeneratedKV("animation", "none")))
 		t.Run(scenario("animate-[bounce_1s_infinite]", newUtilityGeneratedKV("animation", "bounce 1s infinite")))
