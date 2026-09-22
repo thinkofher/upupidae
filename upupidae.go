@@ -149,7 +149,7 @@ func OnFinishedDocWrapWithLayer(name string) func(props []string, d *Doc) *Doc {
 // OnFinishedDocAddReset adds default CSS reset at the beginning of CSS
 // document.
 func OnFinishedDocAddReset(_ []string, d *Doc) *Doc {
-	e := append([]Entry{}, twCSSReset...)
+	e := append([]Entry{}, DefaultReset()...)
 	d.Entries = append(e, d.Entries...)
 	return d
 }
@@ -158,14 +158,8 @@ func OnFinishedDocAddReset(_ []string, d *Doc) *Doc {
 // CSS document wrapped in a layer with given name.
 func OnFinishedDocAddResetWithLayer(name string) func(_ []string, d *Doc) *Doc {
 	return func(s []string, d *Doc) *Doc {
-		_, queries := entriesToLinesAndQueries(twCSSReset)
-
-		q := &Query{
-			Name:   fmt.Sprintf("@layer %s", name),
-			Nested: queries,
-		}
-		d.Entries = append(d.Entries, Entry{Query: q})
-
+		e := append([]Entry{}, DefaultResetWithLayer(name)...)
+		d.Entries = append(e, d.Entries...)
 		return d
 	}
 }
@@ -437,6 +431,18 @@ func DefaultVars() (m map[string]string) {
 // DefaultReset returns default CSS reset entries.
 func DefaultReset() []Entry {
 	return slices.Clone(twCSSReset)
+}
+
+// DefaultResetWithLayer returns default CSS reset entries wrapped into layer
+// with given name.
+func DefaultResetWithLayer(name string) []Entry {
+	r := DefaultReset()
+	_, qs := entriesToLinesAndQueries(r)
+
+	return []Entry{{Query: &Query{
+		Name:   fmt.Sprintf("@layer %s", name),
+		Nested: qs,
+	}}}
 }
 
 func entriesToLinesAndQueries(es []Entry) (lines []string, queries []Query) {
