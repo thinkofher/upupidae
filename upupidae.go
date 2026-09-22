@@ -123,12 +123,51 @@ func (doc *Doc) Reader() io.ReadCloser {
 	return pr
 }
 
+// OnFinishedDocWrapWithLayer wrapes existing doc with layer with given name.
+// You should use this before you add additional entries to the doc.
+func OnFinishedDocWrapWithLayer(name string) func(props []string, d *Doc) *Doc {
+	return func(props []string, d *Doc) *Doc {
+		lines, queries := entriesToLinesAndQueries(d.Entries)
+
+		q := &Query{
+			Name:   fmt.Sprintf("@layer %s", name),
+			Nested: queries,
+		}
+
+		es := []Entry{}
+		for _, l := range lines {
+			es = append(es, Entry{Line: l})
+		}
+
+		es = append(es, Entry{Query: q})
+		d.Entries = es
+
+		return d
+	}
+}
+
 // OnFinishedDocAddReset adds default CSS reset at the beginning of CSS
 // document.
 func OnFinishedDocAddReset(_ []string, d *Doc) *Doc {
 	e := append([]Entry{}, twCSSReset...)
 	d.Entries = append(e, d.Entries...)
 	return d
+}
+
+// OnFinishedDocAddResetWithLayer adds default CSS reset at the beginning of
+// CSS document wrapped in a layer with given name.
+func OnFinishedDocAddResetWithLayer(name string) func(_ []string, d *Doc) *Doc {
+	return func(s []string, d *Doc) *Doc {
+		_, queries := entriesToLinesAndQueries(twCSSReset)
+
+		q := &Query{
+			Name:   fmt.Sprintf("@layer %s", name),
+			Nested: queries,
+		}
+		d.Entries = append(d.Entries, Entry{Query: q})
+
+		return d
+	}
 }
 
 // OnFinishedDocAddVars adds variables, associated with given selector, at the
@@ -158,6 +197,40 @@ func OnFinishedDocAddVars(sel string, vars map[string]string) func(props []strin
 	}
 }
 
+// OnFinishedDocAddVars adds variables, associated with given selector, at the
+// beginning of CSS document, with given layer.
+func OnFinishedDocAddVarsWithLayer(
+	layer, sel string, vars map[string]string,
+) func(props []string, d *Doc) *Doc {
+	return func(props []string, d *Doc) *Doc {
+		q := Query{
+			Name: sel,
+		}
+
+		for _, k := range slices.Sorted(slices.Values(props)) {
+			v, ok := vars[k]
+			if !ok {
+				continue
+			}
+
+			q.KVs = append(q.KVs, KV{Key: k, Value: v})
+		}
+
+		if len(q.KVs) == 0 {
+			return d
+		}
+
+		layered := &Query{
+			Name:   fmt.Sprintf("@layer %s", layer),
+			Nested: []Query{q},
+		}
+
+		d.Entries = append([]Entry{{Query: layered}}, d.Entries...)
+
+		return d
+	}
+}
+
 // OnFinishedDocAddProperties adds @property entries at the end of CSS document
 // together with theirs default values.
 func OnFinishedDocAddProperties(props []string, d *Doc) *Doc {
@@ -175,6 +248,33 @@ func OnFinishedDocAddProperties(props []string, d *Doc) *Doc {
 	}
 
 	return d
+}
+
+// OnFinishedDocAddProperties adds @property entries at the end of CSS document
+// together with theirs default values.
+func OnFinishedDocAddPropertiesWithLayer(layer string) func(props []string, d *Doc) *Doc {
+	return func(props []string, d *Doc) *Doc {
+		for _, p := range props {
+			v, ok := twProperties[p]
+			if !ok {
+				continue
+			}
+
+			d.Entries = append(d.Entries, v.entry(p))
+		}
+
+		if e, ok := layerProperties(props); ok {
+			d.Entries = append(d.Entries, Entry{
+				Query: &Query{
+					Name:   fmt.Sprintf("@layer %s", layer),
+					KVs:    e.Query.KVs,
+					Nested: e.Query.Nested,
+				},
+			})
+		}
+
+		return d
+	}
 }
 
 // OnFinishedDocAddAnimations adds @keyframe entries to the CSS document.
@@ -337,4 +437,18 @@ func DefaultVars() (m map[string]string) {
 // DefaultReset returns default CSS reset entries.
 func DefaultReset() []Entry {
 	return slices.Clone(twCSSReset)
+}
+
+func entriesToLinesAndQueries(es []Entry) (lines []string, queries []Query) {
+	for _, e := range es {
+		if e.Line != "" {
+			lines = append(lines, e.Line)
+		}
+
+		if e.Query != nil {
+			queries = append(queries, *e.Query)
+		}
+	}
+
+	return
 }
