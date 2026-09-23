@@ -348,10 +348,12 @@ func TestGen(t *testing.T) {
 		t.Run(scenario("bottom-(--my-position)", newUtilityGeneratedKV("bottom", "var(--my-position)")))
 		t.Run(scenario("bottom-[3px]", newUtilityGeneratedKV("bottom", "3px")))
 
+		t.Run(scenario("left-40", newUtilityGeneratedKV("left", "calc(var(--spacing) * 40)")))
 		t.Run(scenario("left-5", newUtilityGeneratedKV("left", "calc(var(--spacing) * 5)")))
 		t.Run(scenario("left-3.5", newUtilityGeneratedKV("left", "calc(var(--spacing) * 3.5)")))
 		t.Run(scenario("left-3.2324", newUtilityGeneratedKV("left", "calc(var(--spacing) * 3.2324)")))
 		t.Run(scenario("-left-5", newUtilityGeneratedKV("left", "calc(var(--spacing) * -5)")))
+		t.Run(scenario("-left-40", newUtilityGeneratedKV("left", "calc(var(--spacing) * -40)")))
 		t.Run(scenario("-left-px", newUtilityGeneratedKV("left", "-1px")))
 		t.Run(scenario("left-px", newUtilityGeneratedKV("left", "1px")))
 		t.Run(scenario("left-full", newUtilityGeneratedKV("left", "100%")))
@@ -3960,30 +3962,30 @@ func TestGen(t *testing.T) {
 		t.Run(scenario("scale-none", newUtilityGeneratedKV("scale", "none")))
 		t.Run(scenario("scale-50", &utilityGenerated{
 			kvs: []KV{
-				newCssKV("--tw-scale-x", "var(--scale-50)"),
-				newCssKV("--tw-scale-y", "var(--scale-50)"),
-				newCssKV("--tw-scale-z", "var(--scale-50)"),
+				newCssKV("--tw-scale-x", "50%"),
+				newCssKV("--tw-scale-y", "50%"),
+				newCssKV("--tw-scale-z", "50%"),
 				newCssKV("scale", testScaleValue),
 			},
 		}))
 		t.Run(scenario("-scale-50", &utilityGenerated{
 			kvs: []KV{
-				newCssKV("--tw-scale-x", "calc(var(--scale-50) * -1)"),
-				newCssKV("--tw-scale-y", "calc(var(--scale-50) * -1)"),
-				newCssKV("--tw-scale-z", "calc(var(--scale-50) * -1)"),
+				newCssKV("--tw-scale-x", "calc(50% * -1)"),
+				newCssKV("--tw-scale-y", "calc(50% * -1)"),
+				newCssKV("--tw-scale-z", "calc(50% * -1)"),
 				newCssKV("scale", testScaleValue),
 			},
 		}))
 		t.Run(scenario("scale-[2]", newUtilityGeneratedKV("scale", "2")))
 		t.Run(scenario("scale-x-50", &utilityGenerated{
 			kvs: []KV{
-				newCssKV("--tw-scale-x", "var(--scale-50)"),
+				newCssKV("--tw-scale-x", "50%"),
 				newCssKV("scale", testScaleValue),
 			},
 		}))
 		t.Run(scenario("scale-z-50", &utilityGenerated{
 			kvs: []KV{
-				newCssKV("--tw-scale-z", "var(--scale-50)"),
+				newCssKV("--tw-scale-z", "50%"),
 				newCssKV("scale", testScale3dValue),
 			},
 		}))
@@ -4020,21 +4022,21 @@ func TestGen(t *testing.T) {
 		}))
 
 		t.Run(scenario("rotate-none", newUtilityGeneratedKV("rotate", "none")))
-		t.Run(scenario("rotate-45", newUtilityGeneratedKV("rotate", "var(--rotate-45)")))
-		t.Run(scenario("-rotate-45", newUtilityGeneratedKV("rotate", "calc(var(--rotate-45) * -1)")))
+		t.Run(scenario("rotate-45", newUtilityGeneratedKV("rotate", "45deg")))
+		t.Run(scenario("-rotate-45", newUtilityGeneratedKV("rotate", "calc(45deg * -1)")))
 		t.Run(scenario("rotate-[123deg]", newUtilityGeneratedKV("rotate", "123deg")))
 		t.Run(scenario("-rotate-[123deg]", newUtilityGeneratedKV("rotate", "-123deg")))
 		t.Run(scenario("rotate-(--var)", newUtilityGeneratedKV("rotate", "var(--var)")))
 		t.Run(scenario("-rotate-(--var)", newUtilityGeneratedKV("rotate", "calc(var(--var) * -1)")))
 		t.Run(scenario("rotate-x-45", &utilityGenerated{
 			kvs: []KV{
-				newCssKV("--tw-rotate-x", "rotateX(var(--rotate-45))"),
+				newCssKV("--tw-rotate-x", "rotateX(45deg)"),
 				newCssKV("transform", testTransformValue),
 			},
 		}))
 		t.Run(scenario("-rotate-x-45", &utilityGenerated{
 			kvs: []KV{
-				newCssKV("--tw-rotate-x", "rotateX(calc(var(--rotate-45) * -1))"),
+				newCssKV("--tw-rotate-x", "rotateX(calc(45deg * -1))"),
 				newCssKV("transform", testTransformValue),
 			},
 		}))
@@ -4059,14 +4061,14 @@ func TestGen(t *testing.T) {
 
 		t.Run(scenario("skew-6", &utilityGenerated{
 			kvs: []KV{
-				newCssKV("--tw-skew-x", "skewX(var(--skew-6))"),
-				newCssKV("--tw-skew-y", "skewY(var(--skew-6))"),
+				newCssKV("--tw-skew-x", "skewX(6deg)"),
+				newCssKV("--tw-skew-y", "skewY(6deg)"),
 				newCssKV("transform", testTransformValue),
 			},
 		}))
 		t.Run(scenario("-skew-x-6", &utilityGenerated{
 			kvs: []KV{
-				newCssKV("--tw-skew-x", "skewX(calc(var(--skew-6) * -1))"),
+				newCssKV("--tw-skew-x", "skewX(calc(6deg * -1))"),
 				newCssKV("transform", testTransformValue),
 			},
 		}))

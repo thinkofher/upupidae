@@ -5937,7 +5937,7 @@ func (g *gen) transformPlacementValue(
 	}
 }
 
-func (g *gen) themeScaleValue(ctx context.Context, p *parser.NamePart, negative bool) (string, bool) {
+func (g *gen) themeScaleValue(_ context.Context, p *parser.NamePart, negative bool) (string, bool) {
 	if p.Int == nil {
 		return "", false
 	}
@@ -5948,14 +5948,10 @@ func (g *gen) themeScaleValue(ctx context.Context, p *parser.NamePart, negative 
 	}
 
 	v := fmt.Sprintf("%s%%", s)
-	if tv := g.cssVar(ctx, fmt.Sprintf("--scale-%s", s)); tv != "" {
-		v = tv
-	}
-
 	return negateTransformCalc(v, negative), true
 }
 
-func (g *gen) themeSkewValue(ctx context.Context, p *parser.NamePart, negative bool) (string, bool) {
+func (g *gen) themeSkewValue(_ context.Context, p *parser.NamePart, negative bool) (string, bool) {
 	if p.Int == nil {
 		return "", false
 	}
@@ -5966,9 +5962,6 @@ func (g *gen) themeSkewValue(ctx context.Context, p *parser.NamePart, negative b
 	}
 
 	v := fmt.Sprintf("%sdeg", s)
-	if tv := g.cssVar(ctx, fmt.Sprintf("--skew-%s", s)); tv != "" {
-		v = tv
-	}
 
 	return negateTransformCalc(v, negative), true
 }
@@ -5982,15 +5975,8 @@ func (g *gen) rotateSimpleValue(ctx context.Context, p *parser.NamePart, negativ
 		}
 
 		v := fmt.Sprintf("%sdeg", s)
-		if tv := g.cssVar(ctx, fmt.Sprintf("--rotate-%s", s)); tv != "" {
-			v = tv
-		}
 
 		if negative {
-			if strings.HasSuffix(v, "deg") && !strings.Contains(v, " ") && !strings.HasPrefix(v, "calc(") {
-				return "-" + v, true
-			}
-
 			return fmt.Sprintf("calc(%s * -1)", v), true
 		}
 
@@ -6049,10 +6035,6 @@ func (g *gen) rotateAxisValue(ctx context.Context, axis string, p *parser.NamePa
 		}
 
 		v := fmt.Sprintf("%sdeg", s)
-		if tv := g.cssVar(ctx, fmt.Sprintf("--rotate-%s", s)); tv != "" {
-			v = tv
-		}
-
 		v = negateTransformCalc(v, negative)
 		return fmt.Sprintf("%s(%s)", fn, v), true
 	case p.Custom != "":
