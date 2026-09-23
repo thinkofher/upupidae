@@ -1784,6 +1784,7 @@ func TestGen(t *testing.T) {
 		t.Run(scenario("bg-current", newUtilityGeneratedKV("background-color", "currentcolor")))
 		t.Run(scenario("bg-(--some-var)", newUtilityGeneratedKV("background-color", "var(--some-var)")))
 		t.Run(scenario("bg-[light-dark(var(--color-white),var(--color-gray-950))]", newUtilityGeneratedKV("background-color", "light-dark(var(--color-white), var(--color-gray-950))")))
+		t.Run(scenario("bg-[#080817]/70", newUtilityGeneratedKV("background-color", "color-mix(in oklab, #080817 70%, transparent)")))
 
 		t.Run(scenario("bg-none",
 			newUtilityGeneratedKV("background-image", "none"),

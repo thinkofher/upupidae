@@ -3576,6 +3576,14 @@ func (g *gen) utilityBackground(
 		k, v := parts[0].ArbitraryParts()
 		switch {
 		case k == "color" || cssIsColor(v):
+			kv := g.cssArbitraryKV(ctx, bgColor, parts[0])
+
+			if mod != nil && mod.Int != nil {
+				return newUtilityGeneratedKVf(
+					kv.Key, "color-mix(in oklab, %s %s%%, transparent)", kv.Value, mod.String(),
+				), nil
+			}
+
 			return g.cssArbitrary(ctx, bgColor, parts[0]), nil
 		}
 
